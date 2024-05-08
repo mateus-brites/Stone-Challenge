@@ -4,8 +4,8 @@ import { createCipheriv, createDecipheriv } from 'crypto';
 @Injectable()
 export class CryptoProvider {
   encrypt(text: string) {
-    const key = 'byz9VFNtbRQM0yBODcCb1lrUtVVH3D3x';
-    const nonce = 'X05IGQ5qdBnIqAWD';
+    const key = process.env.CRYPTO_KEY;
+    const nonce = process.env.CRYPTO_NONCE;
     const cipher = createCipheriv(
       'aes-256-cbc',
       Buffer.from(key),
@@ -17,8 +17,8 @@ export class CryptoProvider {
   }
 
   decrypt(encryptedText: string) {
-    const key = 'byz9VFNtbRQM0yBODcCb1lrUtVVH3D3x';
-    const nonce = 'X05IGQ5qdBnIqAWD';
+    const key = process.env.CRYPTO_KEY;
+    const nonce = process.env.CRYPTO_NONCE;
     const decipher = createDecipheriv(
       'aes-256-cbc',
       Buffer.from(key),
