@@ -1,34 +1,36 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { PurchaseService } from './purchase.service';
 import { CreatePurchaseDto } from './dto/create-purchase.dto';
-import { UpdatePurchaseDto } from './dto/update-purchase.dto';
-
-@Controller('purchase')
+import { ITransactionDTO } from './dto/transaction.dto';
+import { CryptoProvider } from 'src/providers/crypto/crypto';
+@Controller('starstore')
 export class PurchaseController {
-  constructor(private readonly purchaseService: PurchaseService) {}
+  constructor(
+    private readonly purchaseService: PurchaseService,
+    private readonly cryptoProvider: CryptoProvider,
+  ) {}
 
-  @Post()
-  create(@Body() createPurchaseDto: CreatePurchaseDto) {
+  @Post('/buy')
+  async create(@Body() data: ITransactionDTO) {
+    const encryptedCardNumber = this.cryptoProvider.encrypt(
+      data.credit_card.card_number,
+    );
+    const createPurchaseDto: CreatePurchaseDto = {
+      card_number: encryptedCardNumber,
+      client_id: data.client_id,
+      date: String(new Date()),
+      value: data.credit_card.value,
+    };
     return this.purchaseService.create(createPurchaseDto);
   }
 
-  @Get()
-  findAll() {
+  @Get('history')
+  async findAll() {
     return this.purchaseService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.purchaseService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePurchaseDto: UpdatePurchaseDto) {
-    return this.purchaseService.update(+id, updatePurchaseDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.purchaseService.remove(+id);
+  @Get('history/:id')
+  async findByClientId(@Param('id') id: string) {
+    return this.purchaseService.findByClientId(id);
   }
 }

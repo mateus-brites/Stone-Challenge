@@ -28,7 +28,7 @@ model Product {
 model Purchase {
   purchase_id	String @id @default(uuid())
   card_number	String 
-  cliend_id	  String
+  client_id	  String
   value	      Int
   date	      String
 
